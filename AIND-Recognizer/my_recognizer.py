@@ -21,5 +21,16 @@ def recognize(models: dict, test_set: SinglesData):
     probabilities = []
     guesses = []
     # TODO implement the recognizer
+    for test_X,test_length in list(test_set.get_all_Xlengths().values()):
+        probability = {}
+        for word,hmm_model in models.items():
+            try:
+                logL = hmm_model.score(test_X,test_length)
+                probability[word] = logL
+            except ValueError:
+                pass
+        probabilities.append(probability)
+
+        guesses = [max(word_dict,key=word_dict.get) for word_dict in probabilities]
     # return probabilities, guesses
-    raise NotImplementedError
+    return probabilities,guesses
