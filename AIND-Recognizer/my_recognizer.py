@@ -25,8 +25,9 @@ def recognize(models: dict, test_set: SinglesData):
         probability = {}
         for word,hmm_model in models.items():
             try:
-                logL = hmm_model.score(test_X,test_length)
-                probability[word] = logL
+                if hmm_model is not None:
+                    logL = hmm_model.score(test_X,test_length)
+                    probability[word] = logL
             except ValueError:
                 pass
         probabilities.append(probability)

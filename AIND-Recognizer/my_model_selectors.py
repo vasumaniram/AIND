@@ -92,9 +92,11 @@ class SelectorBIC(ModelSelector):
             except ValueError:
                 pass
 
-
-        best_model_idx = np.argmin([log_model[0] for log_model in log_model_list])
-        return log_model_list[best_model_idx][1]
+        if len(log_model_list) == 0:
+            return None
+        else:
+            best_model_idx = np.argmin([log_model[0] for log_model in log_model_list])
+            return log_model_list[best_model_idx][1]
 
 
 
@@ -130,8 +132,11 @@ class SelectorDIC(ModelSelector):
                 dic_model_list.append((DIC,hmm_model))
             except ValueError:
                 pass
-        best_model_idx = np.argmax([dic_model[0] for dic_model in dic_model_list])
-        return dic_model_list[best_model_idx][1]
+        if len(dic_model_list) == 0:
+            return None
+        else:
+            best_model_idx = np.argmax([dic_model[0] for dic_model in dic_model_list])
+            return dic_model_list[best_model_idx][1]
 
 
 class SelectorCV(ModelSelector):
@@ -146,9 +151,9 @@ class SelectorCV(ModelSelector):
         for num_states in range(self.min_n_components,self.max_n_components + 1):
             logL = []
             #print(len(self.sequences))
-            best_model = GaussianHMM(n_components=num_states, covariance_type="diag", n_iter=1000,
-                                            random_state=self.random_state, verbose=False).fit(self.X, self.lengths)
             try:
+                best_model = GaussianHMM(n_components=num_states, covariance_type="diag", n_iter=1000,
+                                         random_state=self.random_state, verbose=False).fit(self.X, self.lengths)
                 split_method = KFold()
                 for train_idx,test_idx in split_method.split(self.sequences):
                     train_X,train_lengths = combine_sequences(train_idx,self.sequences)
